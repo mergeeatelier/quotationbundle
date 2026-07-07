@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QT/RC/DN Documents Bundle - MERGEE</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#f5f5f0;color:#1a1a2e;font-size:15px;min-height:100vh}
+.page-header{padding:20px 24px 16px;background:#1a1a2e;color:#fff}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:3px}
+.page-header h1{font-size:20px;font-weight:700}
+.body{padding:20px 24px;max-width:640px;margin:0 auto}
+.card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;overflow:hidden;margin-bottom:16px}
+.card-head{padding:10px 16px;color:#fff;display:flex;justify-content:space-between;align-items:center}
+.card-head h2{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.card-head.round1{background:#3d5af1}
+.card-head.round2{background:#1a7f5a}
+.card-body{padding:16px}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.field label{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.04em}
+.field input,.field select{border:1px solid #ddd;border-radius:8px;padding:10px 12px;font-family:inherit;font-size:14px;color:#1a1a2e;background:#fafafa}
+.field input:focus,.field select:focus{outline:none;border-color:#3d5af1;background:#fff}
+
+.upload-box{border:1.5px dashed #ccc;border-radius:10px;padding:14px;text-align:center;cursor:pointer;background:#fafafa;transition:border-color .15s}
+.upload-box:hover{border-color:#3d5af1}
+.upload-box.has-img{border-style:solid;border-color:#3d5af1;padding:0;overflow:hidden}
+.upload-box .placeholder{font-size:13px;color:#aaa}
+.upload-box img{max-width:100%;max-height:180px;display:block;margin:0 auto}
+input[type=file]{display:none}
+
+.btn{width:100%;border:none;border-radius:10px;padding:13px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;color:#fff;transition:opacity .2s}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.round1{background:#3d5af1}
+.btn.round2{background:#1a7f5a}
+
+.status-msg{font-size:13px;margin-top:10px;text-align:center;display:none}
+.status-msg.ok{color:#1a7f5a}
+.status-msg.error{color:#c62828}
+.result-link{display:block;text-align:center;margin-top:10px;font-size:13px;font-weight:700;color:#1a1a2e;word-break:break-all;display:none}
+
+.locked-msg{display:none;background:#eef3ff;color:#3d5af1;padding:12px 14px;border-radius:8px;font-size:13px;font-weight:700;text-align:center;line-height:1.6;margin-bottom:16px}
+.checking-msg{display:none;font-size:11px;color:#3d5af1;font-weight:700;text-transform:none;letter-spacing:0}
+
+.btn.save-all{width:100%;border:none;border-radius:10px;padding:14px;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;color:#fff;background:#1a1a2e;transition:opacity .2s;margin-bottom:16px}
+.btn.save-all:hover{opacity:.9}
+.btn.save-all:disabled{opacity:.5;cursor:not-allowed}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="eyebrow">MERGEE</div>
+  <h1>QT/RC/DN Documents Bundle</h1>
+</div>
+
+<div class="body">
+
+  <!-- QUOTATION NO (shared key) -->
+  <div class="card">
+    <div class="card-body">
+      <div class="field">
+        <label>Quotation No <span style="color:#c62828">*</span> <span class="checking-msg" id="checking-msg">กำลังตรวจสอบข้อมูล...</span></label>
+        <input id="quotation_no" placeholder="เช่น QT-2026070045" onblur="checkQuotationNo()">
+      </div>
+    </div>
+  </div>
+
+  <!-- ROUND 1: PAYMENT -->
+  <div class="card" id="round1-card">
+    <div class="card-head round1"><h2>QUOTATION — Payment &amp; Receipt</h2></div>
+    <div class="card-body">
+      <div class="field">
+        <label>Screenshot ใบ Quotation</label>
+        <div class="upload-box" id="box-quotation_screenshot" onclick="triggerUpload('quotation_screenshot')">
+          <div class="placeholder">คลิกเพื่ออัปโหลด</div>
+        </div>
+        <input type="file" id="file-quotation_screenshot" accept="image/*" onchange="handleFile('quotation_screenshot', this)">
+      </div>
+      <div class="field">
+        <label>Screenshot หลักฐานการโอนเงิน</label>
+        <div class="upload-box" id="box-payment_screenshot" onclick="triggerUpload('payment_screenshot')">
+          <div class="placeholder">คลิกเพื่ออัปโหลด</div>
+        </div>
+        <input type="file" id="file-payment_screenshot" accept="image/*" onchange="handleFile('payment_screenshot', this)">
+      </div>
+      <div class="field">
+        <label>Screenshot ใบเสร็จรับเงิน</label>
+        <div class="upload-box" id="box-receipt_screenshot" onclick="triggerUpload('receipt_screenshot')">
+          <div class="placeholder">คลิกเพื่ออัปโหลด</div>
+        </div>
+        <input type="file" id="file-receipt_screenshot" accept="image/*" onchange="handleFile('receipt_screenshot', this)">
+      </div>
+    </div>
+  </div>
+
+  <div class="locked-msg" id="round1-locked-msg">
+    Quotation นี้มีข้อมูล Payment &amp; Receipt เรียบร้อย<br>(บันทึกเมื่อ <span id="round1-locked-date"></span>)
+  </div>
+
+  <!-- ROUND 2: DELIVERY -->
+  <div class="card" id="round2-card">
+    <div class="card-head round2"><h2>Delivery Notes</h2></div>
+    <div class="card-body">
+      <div class="field">
+        <label>Delivered by</label>
+        <select id="delivery_partner" onchange="toggleOtherPartner()">
+          <option value="">— เลือก —</option>
+          <option>DHL</option>
+          <option>FedEx</option>
+          <option>KEX</option>
+          <option>Flash</option>
+          <option>J&amp;T</option>
+          <option>Best</option>
+          <option>Thailand Post (EMS)</option>
+          <option>Lalamove</option>
+          <option>อื่นๆ</option>
+        </select>
+      </div>
+      <div class="field" id="field-partner-other" style="display:none">
+        <label>ระบุผู้จัดส่ง</label>
+        <input id="delivery_partner_other" placeholder="โปรดระบุผู้จัดส่ง">
+      </div>
+      <div class="field">
+        <label>Tracking Number</label>
+        <input id="tracking_number" placeholder="เลข tracking">
+      </div>
+      <div class="field">
+        <label>Screenshot สถานะจัดส่งสำเร็จ</label>
+        <div class="upload-box" id="box-delivery_status_screenshot" onclick="triggerUpload('delivery_status_screenshot')">
+          <div class="placeholder">คลิกเพื่ออัปโหลด</div>
+        </div>
+        <input type="file" id="file-delivery_status_screenshot" accept="image/*" onchange="handleFile('delivery_status_screenshot', this)">
+      </div>
+      <div class="field">
+        <label>รูปพัสดุก่อนส่งมอบ (ถ้ามี)</label>
+        <div class="upload-box" id="box-delivery_photo_before" onclick="triggerUpload('delivery_photo_before')">
+          <div class="placeholder">คลิกเพื่ออัปโหลด</div>
+        </div>
+        <input type="file" id="file-delivery_photo_before" accept="image/*" onchange="handleFile('delivery_photo_before', this)">
+      </div>
+      <div class="field">
+        <label>รูปพัสดุหลังส่งมอบ (ถ้ามี)</label>
+        <div class="upload-box" id="box-delivery_photo_after" onclick="triggerUpload('delivery_photo_after')">
+          <div class="placeholder">คลิกเพื่ออัปโหลด</div>
+        </div>
+        <input type="file" id="file-delivery_photo_after" accept="image/*" onchange="handleFile('delivery_photo_after', this)">
+      </div>
+    </div>
+  </div>
+
+  <div class="locked-msg" id="complete-msg" style="background:#e8f5e9;color:#1a7f5a">
+    Quotation นี้มีข้อมูลเรียบร้อย
+  </div>
+
+  <div id="save-area">
+    <button class="btn save-all" id="btn-save" onclick="submitAll()">บันทึกข้อมูล</button>
+    <div class="status-msg" id="status-save"></div>
+    <a class="result-link" id="result-link" href="#" target="_blank">📄 เปิดเอกสารรวม (Combined PDF)</a>
+  </div>
+
+</div>
+
+<script>
+// ⚠️ แทนที่ URL นี้ด้วย Web App URL ของ Apps Script project ใหม่ที่ deploy จากสเปรดชีตนี้
+const APPS_URL = 'https://script.google.com/macros/s/AKfycbxfKnI0sauwhW--9W0elh6CEle-K-h_h4XAevo9e7kG8w2vqcF1pIz33M7kXY4Ju8jbcw/exec';
+
+const uploadData = {};
+
+function g(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+function triggerUpload(key) {
+  document.getElementById('file-' + key).click();
+}
+
+function handleFile(key, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    uploadData[key] = e.target.result;
+    const box = document.getElementById('box-' + key);
+    box.classList.add('has-img');
+    box.innerHTML = '<img src="' + e.target.result + '">';
+  };
+  reader.readAsDataURL(file);
+}
+
+function toggleOtherPartner() {
+  const sel = document.getElementById('delivery_partner');
+  document.getElementById('field-partner-other').style.display = sel.value === 'อื่นๆ' ? 'flex' : 'none';
+}
+
+let round1Locked = false;
+
+async function checkQuotationNo() {
+  const qNo = g('quotation_no');
+  const msgEl      = document.getElementById('round1-locked-msg');
+  const cardEl     = document.getElementById('round1-card');
+  const dateEl     = document.getElementById('round1-locked-date');
+  const checkingEl = document.getElementById('checking-msg');
+  const round2El   = document.getElementById('round2-card');
+  const completeEl = document.getElementById('complete-msg');
+  const saveAreaEl = document.getElementById('save-area');
+
+  function showDefault() {
+    round1Locked = false;
+    msgEl.style.display = 'none';
+    cardEl.style.display = 'block';
+    round2El.style.display = 'block';
+    completeEl.style.display = 'none';
+    saveAreaEl.style.display = 'block';
+  }
+
+  if (!qNo) {
+    showDefault();
+    checkingEl.style.display = 'none';
+    return;
+  }
+
+  checkingEl.style.display = 'inline';
+  msgEl.style.display = 'none';
+
+  try {
+    const res  = await fetch(APPS_URL + '?action=checkquotation&qno=' + encodeURIComponent(qNo));
+    const json = await res.json();
+
+    if (json.found && json.complete) {
+      // Fully complete (Combined PDF already generated) — hide everything
+      round1Locked = true;
+      cardEl.style.display = 'none';
+      round2El.style.display = 'none';
+      saveAreaEl.style.display = 'none';
+      completeEl.style.display = 'block';
+    } else if (json.found) {
+      // Round 1 only — hide Round 1, show Round 2
+      round1Locked = true;
+      dateEl.textContent = json.round1_date;
+      msgEl.style.display = 'block';
+      cardEl.style.display = 'none';
+      round2El.style.display = 'block';
+      completeEl.style.display = 'none';
+      saveAreaEl.style.display = 'block';
+    } else {
+      showDefault();
+    }
+  } catch(e) {
+    // เช็คไม่ได้ (เช่น เน็ตหลุด, endpoint ยังไม่ deploy) — ปล่อยให้กรอกได้ตามปกติ ไม่บล็อกผู้ใช้
+    console.error('checkQuotationNo failed:', e);
+    showDefault();
+  } finally {
+    checkingEl.style.display = 'none';
+  }
+}
+
+async function postJSON(payload) {
+  const res  = await fetch(APPS_URL, {
+    method: 'POST', headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(payload)
+  });
+  return res.json();
+}
+
+async function submitAll() {
+  const qNo = g('quotation_no');
+  if (!qNo) { alert('กรุณากรอก Quotation No ก่อน'); return; }
+
+  const btn      = document.getElementById('btn-save');
+  const statusEl = document.getElementById('status-save');
+  const linkEl   = document.getElementById('result-link');
+  btn.disabled = true;
+  statusEl.style.display = 'none';
+  linkEl.style.display = 'none';
+
+  const messages = [];
+
+  try {
+    // Round 1 — only send if the section isn't locked (i.e. not already saved before)
+    if (!round1Locked) {
+      const r1 = await postJSON({
+        type: 'quotation_round1',
+        quotation_no: qNo,
+        quotation_screenshot: uploadData.quotation_screenshot || '',
+        payment_screenshot:   uploadData.payment_screenshot   || '',
+        receipt_screenshot:   uploadData.receipt_screenshot   || ''
+      });
+      if (r1.status !== 'ok') throw new Error(r1.msg || 'บันทึกรอบที่ 1 ไม่สำเร็จ');
+      messages.push('รอบที่ 1 บันทึกแล้ว');
+    }
+
+    // Round 2 — only send if at least one round-2 field has something in it
+    // (avoids accidentally generating the Combined PDF with blank delivery info)
+    const hasRound2Data = g('delivery_partner') || g('tracking_number') ||
+      uploadData.delivery_status_screenshot || uploadData.delivery_photo_before || uploadData.delivery_photo_after;
+
+    let pdfUrl = '';
+    if (hasRound2Data) {
+      const r2 = await postJSON({
+        type: 'quotation_round2',
+        quotation_no: qNo,
+        delivery_partner: g('delivery_partner'),
+        delivery_partner_other: g('delivery_partner_other'),
+        tracking_number: g('tracking_number'),
+        delivery_status_screenshot: uploadData.delivery_status_screenshot || '',
+        delivery_photo_before: uploadData.delivery_photo_before || '',
+        delivery_photo_after: uploadData.delivery_photo_after || ''
+      });
+      if (r2.status !== 'ok') throw new Error(r2.msg || 'บันทึกรอบที่ 2 ไม่สำเร็จ');
+      messages.push('รอบที่ 2 บันทึกแล้ว + สร้างเอกสารรวมแล้ว');
+      pdfUrl = r2.pdf_url || '';
+    }
+
+    if (messages.length === 0) {
+      statusEl.textContent = 'ไม่มีข้อมูลใหม่ให้บันทึก';
+      statusEl.className = 'status-msg error';
+    } else {
+      statusEl.textContent = '✓ ' + messages.join(' / ');
+      statusEl.className = 'status-msg ok';
+      if (pdfUrl) { linkEl.href = pdfUrl; linkEl.style.display = 'block'; }
+      // Round 1 is now saved (if it was just submitted) — re-check to lock the section
+      checkQuotationNo();
+    }
+  } catch(e) {
+    statusEl.textContent = '❌ ' + e.message;
+    statusEl.className = 'status-msg error';
+  } finally {
+    statusEl.style.display = 'block';
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
