@@ -49,6 +49,9 @@ input[type=file]{display:none}
 .btn.save-all{width:100%;border:none;border-radius:10px;padding:14px;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;color:#fff;background:#1a1a2e;transition:opacity .2s;margin-bottom:16px}
 .btn.save-all:hover{opacity:.9}
 .btn.save-all:disabled{opacity:.5;cursor:not-allowed}
+
+.saving-msg{display:none;text-align:center;font-size:13px;font-weight:700;color:#3d5af1;margin-top:8px;animation:blink 1s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
 </style>
 </head>
 <body>
@@ -169,6 +172,7 @@ input[type=file]{display:none}
 
   <div id="save-area">
     <button class="btn save-all" id="btn-save" onclick="submitAll()">บันทึกข้อมูล</button>
+    <div class="saving-msg" id="saving-msg">กำลังบันทึกข้อมูล…</div>
     <div class="status-msg" id="status-save"></div>
     <a class="result-link" id="result-link" href="#" target="_blank">📄 เปิดเอกสารรวม (Combined PDF)</a>
   </div>
@@ -348,9 +352,11 @@ async function submitAll() {
   const btn      = document.getElementById('btn-save');
   const statusEl = document.getElementById('status-save');
   const linkEl   = document.getElementById('result-link');
+  const savingEl = document.getElementById('saving-msg');
   btn.disabled = true;
   statusEl.style.display = 'none';
   linkEl.style.display = 'none';
+  savingEl.style.display = 'block';
 
   const messages = [];
   let pdfUrl = '';
@@ -409,6 +415,7 @@ async function submitAll() {
     statusEl.textContent = '❌ ' + e.message;
     statusEl.className = 'status-msg error';
   } finally {
+    savingEl.style.display = 'none';
     statusEl.style.display = 'block';
     btn.disabled = false;
   }
