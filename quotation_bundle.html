@@ -105,6 +105,13 @@ input[type=file]{display:none}
     <div class="card-head round2"><h2>Delivery Notes</h2></div>
     <div class="card-body">
       <div class="field">
+        <label>Screenshot ใบส่งสินค้า</label>
+        <div class="upload-box" id="box-delivery_note_screenshot" onclick="triggerUpload('delivery_note_screenshot')">
+          <div class="placeholder">คลิกเพื่ออัปโหลด</div>
+        </div>
+        <input type="file" id="file-delivery_note_screenshot" accept="image/*" onchange="handleFile('delivery_note_screenshot', this)">
+      </div>
+      <div class="field">
         <label>Delivered by</label>
         <select id="delivery_partner" onchange="toggleOtherPartner()">
           <option value="">— เลือก —</option>
@@ -296,13 +303,15 @@ async function submitAll() {
     // Round 2 — only send if at least one round-2 field has something in it
     // (avoids accidentally generating the Combined PDF with blank delivery info)
     const hasRound2Data = g('delivery_partner') || g('tracking_number') ||
-      uploadData.delivery_status_screenshot || uploadData.delivery_photo_before || uploadData.delivery_photo_after;
+      uploadData.delivery_note_screenshot || uploadData.delivery_status_screenshot ||
+      uploadData.delivery_photo_before || uploadData.delivery_photo_after;
 
     let pdfUrl = '';
     if (hasRound2Data) {
       const r2 = await postJSON({
         type: 'quotation_round2',
         quotation_no: qNo,
+        delivery_note_screenshot: uploadData.delivery_note_screenshot || '',
         delivery_partner: g('delivery_partner'),
         delivery_partner_other: g('delivery_partner_other'),
         tracking_number: g('tracking_number'),
