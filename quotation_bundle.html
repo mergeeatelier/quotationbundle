@@ -42,6 +42,8 @@ input[type=file]{display:none}
 .result-link{display:block;text-align:center;margin-top:10px;font-size:13px;font-weight:700;color:#1a1a2e;word-break:break-all;display:none}
 
 .locked-msg{display:none;background:#eef3ff;color:#3d5af1;padding:12px 14px;border-radius:8px;font-size:13px;font-weight:700;text-align:center;line-height:1.6;margin-bottom:16px}
+.btn-add-more{margin-top:8px;background:#fff;border:1.5px solid currentColor;color:inherit;border-radius:8px;padding:7px 16px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+.btn-add-more:hover{opacity:.8}
 .checking-msg{display:none;font-size:11px;color:#3d5af1;font-weight:700;text-transform:none;letter-spacing:0}
 
 .btn.save-all{width:100%;border:none;border-radius:10px;padding:14px;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;color:#fff;background:#1a1a2e;transition:opacity .2s;margin-bottom:16px}
@@ -98,6 +100,7 @@ input[type=file]{display:none}
 
   <div class="locked-msg" id="round1-locked-msg">
     Quotation นี้มีข้อมูล Payment &amp; Receipt เรียบร้อย<br>(บันทึกเมื่อ <span id="round1-locked-date"></span>)
+    <br><button class="btn-add-more" onclick="enableAddMore()">เพิ่มเติมข้อมูล</button>
   </div>
 
   <!-- ROUND 2: DELIVERY -->
@@ -161,6 +164,7 @@ input[type=file]{display:none}
   <div class="locked-msg" id="complete-msg" style="background:#e8f5e9;color:#1a7f5a">
     Quotation นี้มีข้อมูลเรียบร้อย<br>
     <a id="complete-pdf-link" href="#" target="_blank" style="display:inline-block;margin-top:8px;color:#1a7f5a;text-decoration:underline">📄 เปิด Combined PDF</a>
+    <br><button class="btn-add-more" onclick="enableAddMore()">เพิ่มเติมข้อมูล</button>
   </div>
 
   <div id="save-area">
@@ -225,6 +229,18 @@ function toggleOtherPartner() {
 }
 
 let round1Locked = false;
+
+// Called from the "เพิ่มเติมข้อมูล" button shown in either the round1-locked or
+// complete state. Reveals both sections again so more images can be added — the
+// backend appends new uploads onto existing ones rather than overwriting them.
+function enableAddMore() {
+  round1Locked = false;
+  document.getElementById('round1-locked-msg').style.display = 'none';
+  document.getElementById('complete-msg').style.display = 'none';
+  document.getElementById('round1-card').style.display = 'block';
+  document.getElementById('round2-card').style.display = 'block';
+  document.getElementById('save-area').style.display = 'block';
+}
 
 async function checkQuotationNo() {
   const qNo = g('quotation_no');
@@ -337,6 +353,7 @@ async function submitAll() {
   linkEl.style.display = 'none';
 
   const messages = [];
+  let pdfUrl = '';
 
   try {
     // Round 1 — only send if the section isn't locked (i.e. not already saved before)
@@ -350,6 +367,7 @@ async function submitAll() {
       });
       if (r1.status !== 'ok') throw new Error(r1.msg || 'บันทึกรอบที่ 1 ไม่สำเร็จ');
       messages.push('รอบที่ 1 บันทึกแล้ว');
+      if (r1.pdf_url) pdfUrl = r1.pdf_url;
     }
 
     // Round 2 — only send if at least one round-2 field has something in it
@@ -360,7 +378,6 @@ async function submitAll() {
       (uploadData.delivery_photo_before || []).length ||
       (uploadData.delivery_photo_after || []).length;
 
-    let pdfUrl = '';
     if (hasRound2Data) {
       const r2 = await postJSON({
         type: 'quotation_round2',
@@ -375,7 +392,7 @@ async function submitAll() {
       });
       if (r2.status !== 'ok') throw new Error(r2.msg || 'บันทึกรอบที่ 2 ไม่สำเร็จ');
       messages.push('รอบที่ 2 บันทึกแล้ว + สร้างเอกสารรวมแล้ว');
-      pdfUrl = r2.pdf_url || '';
+      if (r2.pdf_url) pdfUrl = r2.pdf_url;
     }
 
     if (messages.length === 0) {
