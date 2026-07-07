@@ -159,7 +159,8 @@ input[type=file]{display:none}
   </div>
 
   <div class="locked-msg" id="complete-msg" style="background:#e8f5e9;color:#1a7f5a">
-    Quotation นี้มีข้อมูลเรียบร้อย
+    Quotation นี้มีข้อมูลเรียบร้อย<br>
+    <a id="complete-pdf-link" href="#" target="_blank" style="display:inline-block;margin-top:8px;color:#1a7f5a;text-decoration:underline">📄 เปิด Combined PDF</a>
   </div>
 
   <div id="save-area">
@@ -244,6 +245,7 @@ async function checkQuotationNo() {
       round2El.style.display = 'none';
       saveAreaEl.style.display = 'none';
       completeEl.style.display = 'block';
+      document.getElementById('complete-pdf-link').href = json.combined_pdf || '#';
     } else if (json.found) {
       // Round 1 only — hide Round 1, show Round 2
       round1Locked = true;
