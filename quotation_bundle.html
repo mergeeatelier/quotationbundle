@@ -75,23 +75,23 @@ input[type=file]{display:none}
       <div class="field">
         <label>Screenshot ใบ Quotation</label>
         <div class="upload-box" id="box-quotation_screenshot" onclick="triggerUpload('quotation_screenshot')">
-          <div class="placeholder">คลิกเพื่ออัปโหลด</div>
+          <div class="placeholder">คลิกเพื่ออัปโหลด (สูงสุด 2 รูป)</div>
         </div>
-        <input type="file" id="file-quotation_screenshot" accept="image/*" onchange="handleFile('quotation_screenshot', this)">
+        <input type="file" id="file-quotation_screenshot" accept="image/*" multiple onchange="handleFile('quotation_screenshot', this)">
       </div>
       <div class="field">
         <label>Screenshot หลักฐานการโอนเงิน</label>
         <div class="upload-box" id="box-payment_screenshot" onclick="triggerUpload('payment_screenshot')">
-          <div class="placeholder">คลิกเพื่ออัปโหลด</div>
+          <div class="placeholder">คลิกเพื่ออัปโหลด (สูงสุด 2 รูป)</div>
         </div>
-        <input type="file" id="file-payment_screenshot" accept="image/*" onchange="handleFile('payment_screenshot', this)">
+        <input type="file" id="file-payment_screenshot" accept="image/*" multiple onchange="handleFile('payment_screenshot', this)">
       </div>
       <div class="field">
         <label>Screenshot ใบเสร็จรับเงิน</label>
         <div class="upload-box" id="box-receipt_screenshot" onclick="triggerUpload('receipt_screenshot')">
-          <div class="placeholder">คลิกเพื่ออัปโหลด</div>
+          <div class="placeholder">คลิกเพื่ออัปโหลด (สูงสุด 2 รูป)</div>
         </div>
-        <input type="file" id="file-receipt_screenshot" accept="image/*" onchange="handleFile('receipt_screenshot', this)">
+        <input type="file" id="file-receipt_screenshot" accept="image/*" multiple onchange="handleFile('receipt_screenshot', this)">
       </div>
     </div>
   </div>
@@ -107,9 +107,9 @@ input[type=file]{display:none}
       <div class="field">
         <label>Screenshot ใบส่งสินค้า</label>
         <div class="upload-box" id="box-delivery_note_screenshot" onclick="triggerUpload('delivery_note_screenshot')">
-          <div class="placeholder">คลิกเพื่ออัปโหลด</div>
+          <div class="placeholder">คลิกเพื่ออัปโหลด (สูงสุด 2 รูป)</div>
         </div>
-        <input type="file" id="file-delivery_note_screenshot" accept="image/*" onchange="handleFile('delivery_note_screenshot', this)">
+        <input type="file" id="file-delivery_note_screenshot" accept="image/*" multiple onchange="handleFile('delivery_note_screenshot', this)">
       </div>
       <div class="field">
         <label>Delivered by</label>
@@ -137,23 +137,23 @@ input[type=file]{display:none}
       <div class="field">
         <label>Screenshot สถานะจัดส่งสำเร็จ</label>
         <div class="upload-box" id="box-delivery_status_screenshot" onclick="triggerUpload('delivery_status_screenshot')">
-          <div class="placeholder">คลิกเพื่ออัปโหลด</div>
+          <div class="placeholder">คลิกเพื่ออัปโหลด (สูงสุด 2 รูป)</div>
         </div>
-        <input type="file" id="file-delivery_status_screenshot" accept="image/*" onchange="handleFile('delivery_status_screenshot', this)">
+        <input type="file" id="file-delivery_status_screenshot" accept="image/*" multiple onchange="handleFile('delivery_status_screenshot', this)">
       </div>
       <div class="field">
         <label>รูปพัสดุก่อนส่งมอบ (ถ้ามี)</label>
         <div class="upload-box" id="box-delivery_photo_before" onclick="triggerUpload('delivery_photo_before')">
-          <div class="placeholder">คลิกเพื่ออัปโหลด</div>
+          <div class="placeholder">คลิกเพื่ออัปโหลด (สูงสุด 2 รูป)</div>
         </div>
-        <input type="file" id="file-delivery_photo_before" accept="image/*" onchange="handleFile('delivery_photo_before', this)">
+        <input type="file" id="file-delivery_photo_before" accept="image/*" multiple onchange="handleFile('delivery_photo_before', this)">
       </div>
       <div class="field">
         <label>รูปพัสดุหลังส่งมอบ (ถ้ามี)</label>
         <div class="upload-box" id="box-delivery_photo_after" onclick="triggerUpload('delivery_photo_after')">
-          <div class="placeholder">คลิกเพื่ออัปโหลด</div>
+          <div class="placeholder">คลิกเพื่ออัปโหลด (สูงสุด 2 รูป)</div>
         </div>
-        <input type="file" id="file-delivery_photo_after" accept="image/*" onchange="handleFile('delivery_photo_after', this)">
+        <input type="file" id="file-delivery_photo_after" accept="image/*" multiple onchange="handleFile('delivery_photo_after', this)">
       </div>
     </div>
   </div>
@@ -186,17 +186,37 @@ function triggerUpload(key) {
   document.getElementById('file-' + key).click();
 }
 
-function handleFile(key, input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    uploadData[key] = e.target.result;
-    const box = document.getElementById('box-' + key);
+function renderUploadBox(key) {
+  const box  = document.getElementById('box-' + key);
+  const imgs = uploadData[key] || [];
+  if (imgs.length === 0) {
+    box.classList.remove('has-img');
+    box.innerHTML = '<div class="placeholder">คลิกเพื่ออัปโหลด (สูงสุด 2 รูป)</div>';
+  } else {
     box.classList.add('has-img');
-    box.innerHTML = '<img src="' + e.target.result + '">';
-  };
-  reader.readAsDataURL(file);
+    box.innerHTML = imgs.map(src =>
+      '<img src="' + src + '" style="max-width:48%;display:inline-block;margin:2px;vertical-align:middle">'
+    ).join('');
+  }
+}
+
+function handleFile(key, input) {
+  const files = Array.from(input.files || []).slice(0, 2); // จำกัดไม่เกิน 2 รูปต่อช่อง
+  if (!files.length) return;
+  if (input.files.length > 2) {
+    alert('เลือกได้สูงสุด 2 รูปต่อช่อง — ใช้แค่ 2 รูปแรกที่เลือก');
+  }
+
+  const readers = files.map(file => new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = e => resolve(e.target.result);
+    reader.readAsDataURL(file);
+  }));
+
+  Promise.all(readers).then(results => {
+    uploadData[key] = results;
+    renderUploadBox(key);
+  });
 }
 
 function toggleOtherPartner() {
@@ -275,6 +295,36 @@ async function postJSON(payload) {
   return res.json();
 }
 
+function clearForm() {
+  // Quotation No + all uploaded images
+  document.getElementById('quotation_no').value = '';
+  Object.keys(uploadData).forEach(k => delete uploadData[k]);
+
+  ['quotation_screenshot','payment_screenshot','receipt_screenshot',
+   'delivery_note_screenshot','delivery_status_screenshot',
+   'delivery_photo_before','delivery_photo_after'].forEach(key => {
+    const box = document.getElementById('box-' + key);
+    box.classList.remove('has-img');
+    box.innerHTML = '<div class="placeholder">คลิกเพื่ออัปโหลด (สูงสุด 2 รูป)</div>';
+    const fileInput = document.getElementById('file-' + key);
+    if (fileInput) fileInput.value = '';
+  });
+
+  // Delivery fields
+  document.getElementById('delivery_partner').value = '';
+  document.getElementById('delivery_partner_other').value = '';
+  document.getElementById('tracking_number').value = '';
+  document.getElementById('field-partner-other').style.display = 'none';
+
+  // Section visibility back to the default (fresh/"not found") state
+  round1Locked = false;
+  document.getElementById('round1-locked-msg').style.display = 'none';
+  document.getElementById('complete-msg').style.display = 'none';
+  document.getElementById('round1-card').style.display = 'block';
+  document.getElementById('round2-card').style.display = 'block';
+  document.getElementById('save-area').style.display = 'block';
+}
+
 async function submitAll() {
   const qNo = g('quotation_no');
   if (!qNo) { alert('กรุณากรอก Quotation No ก่อน'); return; }
@@ -294,9 +344,9 @@ async function submitAll() {
       const r1 = await postJSON({
         type: 'quotation_round1',
         quotation_no: qNo,
-        quotation_screenshot: uploadData.quotation_screenshot || '',
-        payment_screenshot:   uploadData.payment_screenshot   || '',
-        receipt_screenshot:   uploadData.receipt_screenshot   || ''
+        quotation_screenshot: uploadData.quotation_screenshot || [],
+        payment_screenshot:   uploadData.payment_screenshot   || [],
+        receipt_screenshot:   uploadData.receipt_screenshot   || []
       });
       if (r1.status !== 'ok') throw new Error(r1.msg || 'บันทึกรอบที่ 1 ไม่สำเร็จ');
       messages.push('รอบที่ 1 บันทึกแล้ว');
@@ -305,21 +355,23 @@ async function submitAll() {
     // Round 2 — only send if at least one round-2 field has something in it
     // (avoids accidentally generating the Combined PDF with blank delivery info)
     const hasRound2Data = g('delivery_partner') || g('tracking_number') ||
-      uploadData.delivery_note_screenshot || uploadData.delivery_status_screenshot ||
-      uploadData.delivery_photo_before || uploadData.delivery_photo_after;
+      (uploadData.delivery_note_screenshot || []).length ||
+      (uploadData.delivery_status_screenshot || []).length ||
+      (uploadData.delivery_photo_before || []).length ||
+      (uploadData.delivery_photo_after || []).length;
 
     let pdfUrl = '';
     if (hasRound2Data) {
       const r2 = await postJSON({
         type: 'quotation_round2',
         quotation_no: qNo,
-        delivery_note_screenshot: uploadData.delivery_note_screenshot || '',
+        delivery_note_screenshot: uploadData.delivery_note_screenshot || [],
         delivery_partner: g('delivery_partner'),
         delivery_partner_other: g('delivery_partner_other'),
         tracking_number: g('tracking_number'),
-        delivery_status_screenshot: uploadData.delivery_status_screenshot || '',
-        delivery_photo_before: uploadData.delivery_photo_before || '',
-        delivery_photo_after: uploadData.delivery_photo_after || ''
+        delivery_status_screenshot: uploadData.delivery_status_screenshot || [],
+        delivery_photo_before: uploadData.delivery_photo_before || [],
+        delivery_photo_after: uploadData.delivery_photo_after || []
       });
       if (r2.status !== 'ok') throw new Error(r2.msg || 'บันทึกรอบที่ 2 ไม่สำเร็จ');
       messages.push('รอบที่ 2 บันทึกแล้ว + สร้างเอกสารรวมแล้ว');
@@ -333,8 +385,8 @@ async function submitAll() {
       statusEl.textContent = '✓ ' + messages.join(' / ');
       statusEl.className = 'status-msg ok';
       if (pdfUrl) { linkEl.href = pdfUrl; linkEl.style.display = 'block'; }
-      // Round 1 is now saved (if it was just submitted) — re-check to lock the section
-      checkQuotationNo();
+      // เคลียร์ฟอร์มให้พร้อมกรอกรายการถัดไปทันที (สถานะ/ลิงก์ด้านบนยังค้างให้เห็นอยู่)
+      clearForm();
     }
   } catch(e) {
     statusEl.textContent = '❌ ' + e.message;
